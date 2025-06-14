@@ -1,0 +1,111 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!doctype html>
+<html ⚡ lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <title>Registro de Vehículos Usados</title>
+    <link rel="canonical" href="vehiculos-usados.html">
+    <style amp-boilerplate>body{visibility:hidden}</style>
+    <noscript><style amp-boilerplate>body{visibility:visible}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <style amp-custom>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        header {
+            text-align: center;
+            background-color: #c0392b;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        ul {
+            max-width: 600px;
+            margin: auto;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .back {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .button {
+            background: #c0392b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Registro de Vehículos Usados</h1>
+    </header>
+    <h2>Requisitos</h2>
+    <ul>
+        <li>📄 Comprobante de pago de los derechos e impuestos correspondientes.</li>
+Qz        <li>🧾 Factura, factura digital con contrato de adhesión, archivo XML, carta factura original vigente y/o documento que acredite la legal propiedad o posesión (contrato de compraventa, donación, permuta, comodato, usufructo, herencia, dación en pago, adquisición judicial o administrativa), acompañado de copia legible de la factura de origen que especifique vehículo nuevo.</li>
+        <li>🔧 Póliza de seguro automotriz vigente, expedida por una aseguradora registrada. Puede elegir una en: <a href="https://sitio.amis.com.mx/directorio">https://sitio.amis.com.mx/directorio</a>.</li>
+        <li>🪪 Identificación oficial con fotografía del propietario. Documentos vigentes: credencial para votar, cédula profesional con fotografía, pasaporte, documento migratorio, licencia de conducir de Morelos.</li>
+        <li>📃 Comprobante de domicilio en el estado de Morelos del propietario, con antigüedad no mayor a 3 meses. Opciones: identificación vigente con dirección, recibos o contratos de luz, gas, agua, teléfono, TV de paga, predial, constancia domiciliaria, estado de cuenta bancaria, cédula fiscal. Si no está a nombre del propietario, incluir autorización con la leyenda: “Autorizo mi domicilio para recibir notificaciones o requerimientos de pago en relación al vehículo con número de serie o N.I.V. [número], cuyo propietario es [nombre], fecha, firma autógrafa de quien autoriza.”</li>
+        <li>💳 Comprobante de pago de derechos e impuestos de los 5 años anteriores, según el modelo del vehículo (si aplica).</li>
+        <li>📇 Placas anteriores, tarjeta de circulación, baja, y/o documento que acredite su ausencia y libre de adeudo de infracciones.</li>
+        <li>🔍 Constancia de Identificación Vehicular (calcas) emitida por la Fiscalía General del Estado de Morelos, con antigüedad no mayor a 20 días. Ver: <a href="https://servicios.fiscaliamorelos.gob.mx/tramites/">https://servicios.fiscaliamorelos.gob.mx/tramites/</a> y <a href="https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08">https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08</a>.</li>
+    </ul>
+    <div class="back">
+        <a class="button" href="index.html">⬅ Volver al inicio</a>
+    </div>
+</body>
+</html>

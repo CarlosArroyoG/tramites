@@ -1,0 +1,132 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!doctype html>
+<html ⚡ lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <title>Cambio de Propietario</title>
+    <link rel="canonical" href="cambio-propietario.html">
+    <style amp-boilerplate>body{visibility:hidden}</style>
+    <noscript><style amp-boilerplate>body{visibility:visible}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <style amp-custom>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        header {
+            text-align: center;
+            background-color: #27ae60;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        ul {
+            max-width: 600px;
+            margin: auto;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .back {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .button {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cambio de Propietario</h1>
+    </header>
+    <h2>Requisitos para Personas Físicas</h2>
+    <ul>
+        <li>📄 Comprobante de pago de los derechos e impuestos correspondientes.</li>
+        <li>🧾 Factura, factura digital con contrato de adhesión, archivo XML, carta factura vigente y/o documento que acredite la legal propiedad o posesión (contrato de compraventa, donación, permuta, comodato, usufructo, herencia, dación en pago, adquisición judicial o administrativa), acompañado de copia legible de la factura de origen que especifique vehículo nuevo. Para vehículos de procedencia extranjera: factura, título de propiedad, constancia de inscripción, pedimento de importación definitiva (con pedimento de origen para clave R1).</li>
+        <li>🪪 Identificación oficial con fotografía del propietario (credencial para votar, cédula profesional con fotografía, pasaporte, documento migratorio, licencia de conducir de Morelos, vigente).</li>
+        <li>🪪 Identificación oficial con fotografía del propietario anterior.</li>
+        <li>📃 Comprobante de domicilio en el estado de Morelos, no mayor a 3 meses. Opciones: identificación con dirección impresa, recibos o contratos de agua, luz, gas, predial, estado de cuenta bancario, contrato de arrendamiento, constancia domiciliaria, inscripción al RFC. Si no está a nombre del propietario, incluir autorización con la leyenda: “Autorizo mi domicilio para recibir notificaciones o requerimientos de pago en relación al vehículo con número de serie o N.I.V. [número], cuyo propietario es [nombre], fecha, firma autógrafa y copia de la identificación de quien autoriza.”</li>
+        <li>📇 Tarjeta de circulación y/o documento que acredite su ausencia.</li>
+        <li>🔍 Constancia de Identificación Vehicular (calcas) emitida por la Fiscalía General del Estado de Morelos, con antigüedad no mayor a 20 días. Ver: <a href="https://servicios.fiscaliamorelos.gob.mx/tramites/">https://servicios.fiscaliamorelos.gob.mx/tramites/</a> y <a href="https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08">https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08</a>.</li>
+        <li>🔧 Póliza de seguro automotriz vigente, expedida por una aseguradora registrada. Puede elegir una en: <a href="https://sitio.amis.com.mx/directorio">https://sitio.amis.com.mx/directorio</a>.</li>
+        <li>💳 Último comprobante de pago de los derechos e impuestos correspondientes.</li>
+        <li>📜 Para vehículos de personas con discapacidad: Certificado médico expedido por médicos especialistas en medicina física y rehabilitación del DIF, IMSS, ISSSTE o cualquier institución de salud pública, o credencial nacional para personas con discapacidad, y vínculo de consanguinidad si el propietario no es la persona con discapacidad. Ver: <a href="https://dif.morelos.gob.mx/discapacidad/credencial-nacional-para-personas-con-discapacidad">https://dif.morelos.gob.mx/discapacidad/credencial-nacional-para-personas-con-discapacidad</a>.</li>
+        <li>🚗 Para vehículos antiguos: Vehículo con antigüedad mínima de 30 años, con partes y componentes mecánicos y de carrocería originales y operativos, y certificación de condiciones físico-mecánicas expedida por el fabricante, organismo de certificación, laboratorio de prueba o unidad de verificación acreditada. Ver: <a href="https://www.ciitec.ipn.mx/servicios-vinculacion/auto-antiguo.html">https://www.ciitec.ipn.mx/servicios-vinculacion/auto-antiguo.html</a>.</li>
+        <li>📸 Para remolques: 4 fotografías a color y original de la revista mecánica (no aplica seguro automotriz).</li>
+    </ul>
+    <h2>Requisitos para Personas Morales</h2>
+    <ul>
+        <li>📄 Comprobante de pago de los derechos e impuestos correspondientes.</li>
+        <li>🧾 Factura, factura digital con contrato de adhesión, archivo XML, carta factura vigente y/o documento que acredite la legal propiedad o posesión (contrato de compraventa, donación, permuta, comodato, usufructo, herencia, dación en pago, adquisición judicial o administrativa), acompañado de copia legible de la factura de origen que especifique vehículo nuevo. Para vehículos de procedencia extranjera: factura, título de propiedad, constancia de inscripción, pedimento de importación definitiva (con pedimento de origen para clave R1).</li>
+        <li>🪪 Identificación oficial con fotografía del propietario anterior.</li>
+        <li>📜 Registro Federal de Contribuyentes.</li>
+        <li>📃 Acta constitutiva.</li>
+        <li>📄 Poder notarial para actos de administración, de dominio o especiales para trámites de control vehicular, e identificación del representante legal.</li>
+        <li>📃 Comprobante de domicilio vigente en el estado de Morelos, no mayor a 3 meses: recibo de luz, agua, teléfono, TV de paga, internet, predial o estado de cuenta.</li>
+        <li>📇 Tarjeta de circulación y/o documento que acredite su ausencia.</li>
+        <li>🔍 Constancia de Identificación Vehicular (calcas) emitida por la Fiscalía General del Estado de Morelos, con antigüedad no mayor a 20 días. Ver: <a href="https://servicios.fiscaliamorelos.gob.mx/tramites/">https://servicios.fiscaliamorelos.gob.mx/tramites/</a> y <a href="https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08">https://cemer.morelos.gob.mx/?q=tramite&tramite=FGE/DGUBA/08</a>.</li>
+        <li>🔧 Póliza de seguro automotriz vigente, expedida por una aseguradora registrada. Puede elegir una en: <a href="https://sitio.amis.com.mx/directorio">https://sitio.amis.com.mx/directorio</a>.</li>
+        <li>💳 Último comprobante de pago de los derechos e impuestos.</li>
+        <li>📜 Para vehículos de personas con discapacidad: Certificado médico expedido por médicos especialistas en medicina física y rehabilitación del DIF, IMSS, ISSSTE o cualquier institución de salud pública, o credencial nacional para personas con discapacidad, y acreditar una relación laboral con la empresa. Ver: <a href="https://dif.morelos.gob.mx/discapacidad/credencial-nacional-para-personas-con-discapacidad">https://dif.morelos.gob.mx/discapacidad/credencial-nacional-para-personas-con-discapacidad</a>.</li>
+        <li>🚗 Para vehículos antiguos: Vehículo con antigüedad mínima de 30 años, con partes y componentes mecánicos y de carrocería originales y operativos, y certificación de condiciones físico-mecánicas expedida por el fabricante, organismo de certificación, laboratorio de prueba o unidad de verificación acreditada. Ver: <a href="https://www.ciitec.ipn.mx/servicios-vinculacion/auto-antiguo.html">https://www.ciitec.ipn.mx/servicios-vinculacion/auto-antiguo.html</a>.</li>
+        <li>📸 Para remolques: 4 fotografías a color y original de la revista mecánica (no aplica seguro automotriz).</li>
+    </ul>
+    <div class="back">
+        <a class="button" href="index.html">⬅ Volver al inicio</a>
+    </div>
+</body>
+</html>

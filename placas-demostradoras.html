@@ -1,0 +1,108 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!doctype html>
+<html ⚡ lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <title>Placas Demostradoras</title>
+    <link rel="canonical" href="placas-demostradoras.html">
+    <style amp-boilerplate>body{visibility:hidden}</style>
+    <noscript><style amp-boilerplate>body{visibility:visible}</style></noscript>
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <style amp-custom>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        header {
+            text-align: center;
+            background-color: #1abc9c;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        ul {
+            max-width: 600px;
+            margin: auto;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .back {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .button {
+            background: #1abc9c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Placas Demostradoras</h1>
+    </header>
+    <h2>Requisitos Complementarios</h2>
+    <ul>
+        <li>📄 Solicitud por escrito firmada por el representante legal.</li>
+        <li>🪪 Identificación oficial del representante legal.</li>
+        <li>🔧 Póliza de seguro de flotilla o piso con comprobante de pago.</li>
+        <li>📃 Acta constitutiva de la agencia, comprobante de domicilio y cédula fiscal.</li>
+        <li>📍 Comprobante de domicilio en Morelos a nombre de la agencia.</li>
+    </ul>
+    <div class="back">
+        <a class="button" href="index.html">⬅ Volver al inicio</a>
+    </div>
+</body>
+</html>
